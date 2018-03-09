@@ -1,0 +1,19 @@
+{
+  "name": "client-logger",
+  "version": "1.0.0",
+  "description": "Browser side logger for Web Apps",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Logger",
+    "browser"
+  ],
+  "dependencies": {
+    "express": "^4.16.2",
+    "underscore": "^1.8.3"
+  },
+  "author": "mdathrika@ebay.com",
+  "license": "ISC"
+}

@@ -1,0 +1,24 @@
+<html>
+    <head>
+        <script src="static/logger.js">
+        </script>
+
+        <script>
+            function logData() {
+                $logger.init({ 'url': '/api/log', 'flushInterval': 1000, 'samplingRate': 50, 'sendMetrics': true});
+
+                $logger.registerPlugin('ebay', function() {
+                    return {
+                        'rlogid': 't6klaook%60b0%3D%3C%3Dosuojbnkmcc4%3B(73766%3F7-161da07d39a-0x602',
+                        'pageName': 'DefaultPage'
+                    }
+                });
+                $logger.log('Hello, Logging Data!!');
+            }
+        </script>
+    </head>
+    <body onload="logData()">
+            <h1>Hello World!!</h1>
+    </body>
+
+</html>
