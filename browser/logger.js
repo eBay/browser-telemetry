@@ -27,15 +27,16 @@ Logger.prototype.init = function(options) {
     //Use Sampling Flag provide in init() or calculate Sampling factor based on Sampling Rate
     var isInSampling = options.isInSampling !== undefined ? options.isInSampling : sample(options.samplingRate);
     console.log('Is in Sample: ', isInSampling);
-    
+    var _this = this;
+
     //Setup timer & flush ONLY if this is in Sampling
     if(isInSampling) {
         var loglevels = ['log', 'info', 'warn','debug','error'];
 
         loglevels.forEach(function(level) {
             var _fn = console[level];
-            console[level] = function(args) {
-                logger[level](args);
+            console[level] = function(...args) {
+                _this[level](args);
                 _fn(args);
             }
         });
@@ -70,28 +71,33 @@ Logger.prototype.metrics = function() {
     return metrics;
 }
 
-Logger.prototype.log = function(message) {
-    this.buffer.push({level: 'LOG',msg: message});
+Logger.prototype.log = function() {
+    this.addToQ('LOG', arguments);
 }
 
-Logger.prototype.info = function(message) {
-    this.buffer.push({level: 'INFO',msg: message});
+Logger.prototype.info = function() {
+    this.addToQ('INFO', arguments);
 }
 
-Logger.prototype.debug = function(message) {
-    this.buffer.push({level: 'DEBUG',msg: message});
+Logger.prototype.debug = function() {
+    this.addToQ('DEBUG', arguments);
 }
 
-Logger.prototype.warn = function(message) {
-    this.buffer.push({level: 'WARN',msg: message});
+Logger.prototype.warn = function() {
+    this.addToQ('WARN', arguments);
 }
 
-Logger.prototype.error = function(message) {
-    this.buffer.push({level: 'ERROR',msg: message});
+Logger.prototype.error = function() {
+    this.addToQ('ERROR', arguments);
 }
 
 Logger.prototype.clearBuffer = function(clearFromIndex) {
     this.buffer = this.buffer.slice(clearFromIndex);
+}
+
+Logger.prototype.addToQ = function(type, args) {
+    var message = (args.length>0 && [].join.call(args, ' ')) || '';
+    this.buffer.push({level: type, msg: message});
 }
 
 Logger.prototype.flush = function() {
