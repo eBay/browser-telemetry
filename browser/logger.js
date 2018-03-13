@@ -90,15 +90,12 @@ Logger.prototype.warn = function() {
 
 Logger.prototype.error = function() {
     var args = [];
-    // console.log(arguments);
     Array.prototype.slice.call(arguments[0]).forEach(function(elem) {
         
         if(typeof elem === 'object' && elem.stack) {
             args.push(elem.stack);
-            // console.log('stack',elem);
         } else {
             args.push(elem);
-            // console.log('str:',elem);
         }
     });
 
@@ -161,7 +158,19 @@ function sample(samplingRate) {
 function intialize() {    
     var logger = new Logger();
     if(window) {
-        window.$logger = logger;        
+        window.$logger = logger;
+        
+        var _onerror = window.onerror;
+        //Handle Uncaught Errors
+        window.onerror = function() {
+            var args = Array.prototype.slice.call(arguments);
+            logger.error(args);
+            if(_onerror) {
+                return _onerror.apply(window, args);
+            } else {
+                return false;
+            }            
+        };        
     }    
 }
 
