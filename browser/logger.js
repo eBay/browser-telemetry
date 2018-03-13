@@ -35,9 +35,10 @@ Logger.prototype.init = function(options) {
 
         loglevels.forEach(function(level) {
             var _fn = console[level];
-            console[level] = function(...args) {
+            console[level] = function() {
+                var args = Array.prototype.slice.call(arguments);
                 _this[level](args);
-                _fn(args);
+                _fn.apply(console, args);
             }
         });
 
@@ -88,7 +89,20 @@ Logger.prototype.warn = function() {
 }
 
 Logger.prototype.error = function() {
-    this.addToQ('ERROR', arguments);
+    var args = [];
+    // console.log(arguments);
+    Array.prototype.slice.call(arguments[0]).forEach(function(elem) {
+        
+        if(typeof elem === 'object' && elem.stack) {
+            args.push(elem.stack);
+            // console.log('stack',elem);
+        } else {
+            args.push(elem);
+            // console.log('str:',elem);
+        }
+    });
+
+    this.addToQ('ERROR', args);
 }
 
 Logger.prototype.clearBuffer = function(clearFromIndex) {
