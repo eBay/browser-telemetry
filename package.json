@@ -1,18 +1,33 @@
 {
-  "name": "client-logger",
+  "name": "browser-telemetry",
   "version": "1.0.0",
   "description": "Browser side logger for Web Apps",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "NODE_ENV=test DEPLOY_ENV=test mocha test/*.js  --timeout 15s",
+    "lint": "./node_modules/.bin/jshint ./lib --config ./.jshintrc",
+    "coverage": "NODE_ENV=test DEPLOY_ENV=test istanbul cover --dir gh-pages/coverage ./node_modules/.bin/_mocha test/*.js --- --timeout 15s"
   },
   "keywords": [
     "Logger",
     "browser"
   ],
   "dependencies": {
-    "express": "^4.16.2",
-    "underscore": "^1.8.3"
+    "express": "^4.16.2",    
+    "underscore": "^1.8.3",
+    "try-require": "^1.2.1"
+  },
+  "devDependencies": {
+    "body-parser":"^1.18.2",
+    "istanbul": "^0",
+    "jshint": "^2",
+    "mocha": "^3",
+    "supertest": "^3.0.0",
+    "nock": "^9",
+    "puppeteer": "^1.1.1",
+    "request": "^2.85.0",
+    "shelljs": "^0.3",
+    "zombie": "^5.0.8"
   },
   "author": "mdathrika@ebay.com",
   "license": "ISC"
