@@ -13,19 +13,26 @@ app.use(bodyParser.json({ type: 'text/html' }));
 app.use(loggerMiddleware({
     path: '/api/log',
     log: function(req, res, callback) {
-        // console.log('*********Received******', JSON.stringify(req.browserPayload));
         res.send(JSON.stringify(req.browserPayload)); 
         app.emit('bowserPayload', JSON.stringify(req.browserPayload));       
         callback();
     }
 }));
 
-app.get('/', (req, res)=> {
-    res.sendFile(path.join(__dirname, 'home.html'), {
+app.get('/samplingoff', (req, res)=> {    
+    res.sendFile(path.join(__dirname, 'sampling.html'), {
         headers: {
             'Content-Type': 'text/html'
         }
-    });
+    });        
+});
+
+app.get('/', (req, res)=> {    
+    res.sendFile(path.join(__dirname, 'allfeatures.html'), {
+        headers: {
+            'Content-Type': 'text/html'
+        }
+    });    
 });
 
 module.exports = app;

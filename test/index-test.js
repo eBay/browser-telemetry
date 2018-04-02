@@ -53,10 +53,37 @@ describe(__filename, function() {
             });
             browser.on('error',function (err){
                console.log('* error: ', err);
-            });
-            // browser.on('loaded', function() {                
-            // });
+            });            
             browser.visit('/', function startXhr() {
+                console.log('Main page is loaded');                                  
+            });                    
+    });
+
+    it('should NOT fire Telemetry JS on Browser', function(done) {
+                
+        app.on('bowserPayload', (bowserPayload)=> {
+            assert.fail('Should NOT Sent Events to Server');            
+        });
+
+        Browser.localhost('www.test.ebay.com', 9099);
+            var browser = new Browser();
+            browser.userAgent = 'MSIE 9';
+            browser.debug = true;
+            browser.on('xhr', function (event) {
+                assert.fail('Should NOT call XHR Events');  
+                // console.log('* XHR event: ', event);
+            });
+            browser.on('console', function(level, message) {
+                console.log(level, message);                
+                if(message.indexOf('Is in Sample') > -1) {
+                    assert.equal(message, 'Is in Sample:  false');
+                    setTimeout(done, 1000);                    
+                }                 
+            });
+            browser.on('error',function (err){
+               console.log('* error: ', err);
+            });            
+            browser.visit('/samplingoff', function startXhr() {
                 console.log('Main page is loaded');                                  
             });                    
     });
