@@ -136,14 +136,14 @@ Logger.prototype.flush = function() {
     } else {        
         var xhr = new XMLHttpRequest();
         xhr.open('POST', this.url, true); // third parameter indicates sync xhr
-        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader('Content-Type', 'text/plain');
         xhr.onreadystatechange = function() {//Call a function when the state changes.
-            if(xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
+            if(xhr.readyState == 4 && xhr.status == 200) {
                 // Request finished. Do processing here.
                 _this.clearBuffer(bufSize);
-            }
+            }            
         }
-        xhr.send(payload);
+        xhr.send(JSON.stringify(payload));
     }
 }
 
