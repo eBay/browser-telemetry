@@ -5,7 +5,7 @@
 
         <script>
             function logData() {
-                $logger.init({ 'url': '/api/log', 'flushInterval': 1000, 'samplingRate': 50, 'sendMetrics': true});
+                $logger.init({ 'url': '/api/log', 'flushInterval': 2000, 'isInSampling': true, 'sendMetrics': true});
 
                 $logger.registerPlugin('ebay', function() {
                     return {
@@ -14,6 +14,9 @@
                     }
                 });
                 $logger.log('Hello, Logging Data!!');
+                console.log('Hello from console.log');
+                console.error('Hello from console.error');
+                console.info('Hello from console.info');
             }
         </script>
     </head>

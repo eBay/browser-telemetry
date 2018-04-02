@@ -21,8 +21,9 @@ let app = express();
 app.use(bodyParser.json({ type: 'application/*+json' }));
 app.use(bodyParser.json({ type: 'text/plain' }));
 
+// app.use('/browserstatic', express.static(path.join(require.resolve('browser-telemetry'), '..','browser')));
 app.use('/static', express.static('browser'))
-
+console.log('******',path.join(require.resolve('browser-telemetry'), '..','browser'));
 app.use(logger(loggerOptions));
 
 app.get('/', (req, res)=> {
