@@ -26,13 +26,20 @@ Client side telemetry module collects client(browser) side errors,logs,metrics a
             function logData() {
                 $logger.init({ 'url': '/api/log', 'flushInterval': 1000, 'samplingRate': 50, 'sendMetrics': true});
 
-                $logger.registerPlugin('ebay', function() {
+                $logger.registerPlugin('custom', function() {
                     return {
-                        'rlogid': 't6klaook%60b0%3D%3C%3Dosuojbnkmcc4%3B(73766%3F7-161da07d39a-0x602',
-                        'pageName': 'DefaultPage'
+                        'Pagename': 'HomePage'                        
                     }
                 });
                 $logger.log('Hello, Logging Data!!');
+
+                //Console
+                console.log('Hello, from console.log');
+                console.error('Hello, from console.error');
+                console.info('Hello, from console.info');
+
+                //Client Side Uncaught Exception
+                throw new Error('Uncaught Error');
             }
         </script>
     </head>
@@ -45,26 +52,29 @@ Client side telemetry module collects client(browser) side errors,logs,metrics a
 ### Server Side Usage
 
 ```javascript
-    let Logger = require('./');
-
-    let logger = new Logger({
-        path:  '/api/log',
-        log: function(req, payload) {
-            console.log('Inside Override', payload.metrics, payload.url, payload.ebay.rlogid, payload.ebay.pageName);
-            let eventList = payload.logs;                
-
-            eventList.forEach((event) => {
-                console.log(`Override:: ${event.level}: ${JSON.stringify(event.msg)}`);
-            }); 
-        }
-    });
-
+    
     let app = express();
-
     app.use(bodyParser.json({ type: 'application/*+json' }));
     app.use(bodyParser.json({ type: 'text/plain' }));
 
-    app.use(logger.middleware());
+    //require Logger
+    let loggerMiddleware = require('./');
+    
+    //Add Logger Middleware
+    app.use(loggerMiddleware({
+        path: '/api/log',
+        log: function(req, res, callback) {
+            let payload = req.browserPayload; 
+            console.log('Metrics:', payload.metrics);   
+            
+            //Consoles from Client Side            
+            payload.logs.forEach((event) => {
+                console.log(`${event.level}: ${JSON.stringify(event.msg)}`);
+            });   
+            console.log('Custom Plugin Data:', payload.custom);   
+            callback();
+        }
+    }));
 ```
 
 ## API
