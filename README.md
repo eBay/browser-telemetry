@@ -89,6 +89,52 @@ Minified JS **`logger.min.js`**
         }
     }));
 ```
+### Payload Data
+* **logs/errors:** ALL console logs/errors are intercepted and sent in `logs` field.
+* **Uncaught Exceptions:** ALL uncaught exceptions are intercepted and sent in `logs` field as `ERROR`.
+* **Metrics:** Browser load times are captured using timing & navigation API(Only in compatible browsers). 
+    * **rc:** Redirect Count, number of times page is redirected before hitting current page.
+    * **lt:** Load Time, load time of the page.
+    * **ct:** Connect Time, time took to connect to server.
+    * **rt:** Render Time, time took to render the page.
+    * **navType:** Tells you how the page is accessed. `0=Navigate, 1=Reload, 2=History`
+
+```json
+{
+  "metrics": {
+    "navType": 0,
+    "rc": 0,
+    "lt": 255,
+    "ct": 72,
+    "rt": 147
+  },
+  "logs": [
+    {
+      "level": "LOG",
+      "msg": "Hello, Logging Data!!"
+    },
+    {
+      "level": "LOG",
+      "msg": "Hello from console.log"
+    },
+    {
+      "level": "ERROR",
+      "msg": "Hello from console.error"
+    },
+    {
+      "level": "INFO",
+      "msg": "Hello from console.info"
+    },
+    {
+      "level": "ERROR",
+      "msg": "Uncaught Error: Uncaught http://localhost:8080/ 20 23 Error: Uncaught\n    at logData (http://localhost:8080/:20:23)\n    at onload (http://localhost:8080/:24:30)"
+    }
+  ],
+  "custom": {
+    "pageName": "HomePage"
+  }
+}
+```
 
 ## API
 ### Client Side API
@@ -121,7 +167,6 @@ Minified JS **`logger.min.js`**
             }
         });
     ```
-
 
 ### Server Side API
 
