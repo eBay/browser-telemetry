@@ -12,6 +12,7 @@ Client side telemetry module collects client(browser) side errors,logs,metrics a
 ## TBD
 * Rate Limiting
 * Token based API access
+* CORS
 
 ## Usage
 
@@ -80,4 +81,41 @@ Client side telemetry module collects client(browser) side errors,logs,metrics a
 ## API
 ### Client Side API
 
+* #### $logger
+    On load of Javascript file, `$logger` object gets hooked up to `window` object for global access.
+
+* #### $logger.init(object)
+    For initializing logger, call this API. 
+    **Input:**
+    ```json
+    {
+        'url': 'api/log', //Relative path
+        'flushInterval': 1000, //1sec,
+        'samplingRate': 10, //10%, Client Side Sampling
+        'isInSampling': true, //Flag from Server Side Sampling
+        'sendMetrics': true, //Flag to send metrics or not
+    }
+    ```
+
+* #### $logger.registerPlugin(pluginName, callback)
+    Some times you need to send your own custom data. You can send this by registering your own callback for data fetch. 
+
+    On every flush, ALL registered plugins gets called for data fetch.
+
+    ```javascript
+        $logger.registerPlugin('custom', function() {
+            return {
+                'Pagename': 'HomePage'                        
+            }
+        });
+    ```
+
+
 ### Server Side API
+
+* #### Middleware
+
+* #### Log Hook
+
+### Ackowledge
+    This module is created as an inspiration from `beaver-logger`. Main motivation for the module is to reduce client side JS file size and provide minimal functionality for intercepting logs/metrics/uncaught exceptions on browser side.
