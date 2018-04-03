@@ -183,6 +183,16 @@ If you are using [krakenjs](https://github.com/krakenjs/kraken-js), then you can
     }
 
 ```
+### Example
+See the working example in `example` folder.
+
+**Running Example Server**
+```shell
+    node example/server.js
+
+    //Open Browser pointing to http://localhost:8080
+    //ALl Logs/Metrics will be dumped on Server side console.
+```
 
 ### Ackowledgement
 
