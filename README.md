@@ -1,6 +1,6 @@
-# Client Side Telemetry
+# Browser-Telemetry
 
-Client side telemetry module collects client(browser) side errors,logs,metrics and sends back to server for logging & alerting.
+`browser-telemetry` module collects client(browser) side errors,logs,metrics(timing & navigation), uncaught exceptions etc and sends back to server for logging & alerting.
 
 ## Features
 * Intercept console.log/error/info/warn on browser
@@ -19,8 +19,13 @@ Client side telemetry module collects client(browser) side errors,logs,metrics a
 
 ### Client Side Usage
 
+```html
+    <script src="static/logger.min.js">
+    </script>
+```
 Minified JS **`logger.min.js`**
 
+**Example:**
 ```html
 <html>
     <head>
