@@ -7,10 +7,9 @@
             function logData() {
                 $logger.init({ 'url': '/api/log', 'flushInterval': 2000, 'isInSampling': false, 'sendMetrics': true});
 
-                $logger.registerPlugin('ebay', function() {
-                    return {
-                        'rlogid': 't6klaook%60b0%3D%3C%3Dosuojbnkmcc4%3B(73766%3F7-161da07d39a-0x602',
-                        'pageName': 'DefaultPage'
+                $logger.registerPlugin('custom', function() {
+                    return {                        
+                        'pageName': 'HomePage'
                     }
                 });
                 $logger.log('Hello, Logging Data!!');
