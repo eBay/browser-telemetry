@@ -3,10 +3,11 @@
 Client side telemetry module collects client(browser) side errors,logs,metrics and sends back to server for logging & alerting.
 
 ## Features
-* Intercept console.log/error/info/warn
+* Intercept console.log/error/info/warn on browser
+* Intercept Uncaught Exceptions on browser
 * Batch update
 * Timing & Navigation metrics
-* Sampling
+* Sampling (Browser side & Server Side)
 * Custom Data Provider plugins
 
 ## TBD
@@ -17,10 +18,13 @@ Client side telemetry module collects client(browser) side errors,logs,metrics a
 ## Usage
 
 ### Client Side Usage
+
+Minified JS **`logger.min.js`**
+
 ```html
 <html>
     <head>
-        <script src="static/logger.js">
+        <script src="static/logger.min.js">
         </script>
 
         <script>
@@ -50,11 +54,14 @@ Client side telemetry module collects client(browser) side errors,logs,metrics a
 
 </html>
 ```
+
 ### Server Side Usage
 
 ```javascript
     
     let app = express();
+    const path = path.resolve('browser-telemetry');
+    app.use('/static', express.static(path.join(path, '../browser')));
     app.use(bodyParser.json({ type: 'application/*+json' }));
     app.use(bodyParser.json({ type: 'text/plain' }));
 
@@ -149,8 +156,29 @@ Client side telemetry module collects client(browser) side errors,logs,metrics a
         }));
     ```
 ### File Size
+
 Main motivation for creating this module is to reduce file size. Currently, minified client side JS file size is **~2KB**.
+
+### Kraken Style Usage
+
+If you are using [krakenjs](https://github.com/krakenjs/kraken-js), then you can easily configure in `middleware.json` as shown below.
+
+```javascript
+    //middleware route
+    "browser-telemetry": {
+        "enabled": true,
+        "priority": 100,
+        "module": {
+            "name": "browser-telemetry",
+            "arguments": [{
+                "path": "/api/log",
+                "log": "MODULE_NAME_TO_REQUIRE"
+            }]
+        }
+    }
+
+```
 
 ### Ackowledgement
 
-This module is created as an inspiration from `beaver-logger`. Main motivation for the module is to reduce client side JS file size and provide minimal functionality for intercepting logs/metrics/uncaught exceptions on browser side.
+This module is created as an inspiration from [beaver-logger](https://github.com/krakenjs/beaver-logger). Main motivation is to reduce client side JS file size and provide minimal functionality for intercepting logs/metrics/uncaught exceptions on browser side.
