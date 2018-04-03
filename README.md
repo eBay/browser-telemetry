@@ -87,13 +87,13 @@ Client side telemetry module collects client(browser) side errors,logs,metrics a
 * #### $logger.init(object)
     For initializing logger, call this API. 
     **Input:**
-    ```json
+    ```javascript
     {
-        'url': 'api/log', //Relative path
-        'flushInterval': 1000, //1sec,
-        'samplingRate': 10, //10%, Client Side Sampling
-        'isInSampling': true, //Flag from Server Side Sampling
-        'sendMetrics': true, //Flag to send metrics or not
+        "url": "api/log", //Relative path
+        "flushInterval": 1000, //1sec,
+        "samplingRate": 10, //10%, Client Side Sampling
+        "isInSampling": true, //Flag from Server Side Sampling
+        "sendMetrics": true, //Flag to send metrics or not
     }
     ```
 
@@ -114,8 +114,43 @@ Client side telemetry module collects client(browser) side errors,logs,metrics a
 ### Server Side API
 
 * #### Middleware
+    #### require('browser-telemetry')(options)
+    * **options:** 
+        * **path**: Path on which logger should be mounted. This is the end where events from browser are posted.
+        * **log**: A callback function which will be invoked on every event from client side.
+            * **request**: Holds HTTP request object
+            * **response**: Holds HTTP response object. You can set status to 200/404 based on the logic.
+            * **callback**: A callback to notify task completion.
+
+        ```javascript
+            const loggerMiddleware = require('browser-telemetry');
+            let app = reqiure('express');
+            ...
+            app.use(loggerMiddleware({
+                path: 'path/to/mount',
+                log: function(req, res, callback) {
+                    console.log(req.browserPayload);
+                }
+            }));
+        ```
 
 * #### Log Hook
+    As an app developer, you can intercept browser events by hooking to `log` callbacks. Simply pass your custom function while registering middleware as shown below.
+    
+    Browser events are populated in `browserPayload` variable in request object.
 
-### Ackowledge
-    This module is created as an inspiration from `beaver-logger`. Main motivation for the module is to reduce client side JS file size and provide minimal functionality for intercepting logs/metrics/uncaught exceptions on browser side.
+    ```javascript
+        app.use(loggerMiddleware({
+            path: 'path/to/mount',
+            log: function(req, res, callback) {
+                //req.browserPayload hold browser events/logs.
+                console.log(req.browserPayload);
+            }
+        }));
+    ```
+### File Size
+Main motivation for creating this module is to reduce file size. Currently, minified client side JS file size is **~2KB**.
+
+### Ackowledgement
+
+This module is created as an inspiration from `beaver-logger`. Main motivation for the module is to reduce client side JS file size and provide minimal functionality for intercepting logs/metrics/uncaught exceptions on browser side.
