@@ -1,4 +1,21 @@
+gh-pages
 node_modules
+# Eclipse configuration #
+.settings
+.classpath
+.buildpath
+*.log
+target
+.target
+pids
+.idea
+log
 .beans
 .cache
-gh-pages
+*.marko.js
+*.dust.js
+project.sublime-workspace
+test/static
+coverage/*
+yarn.lock
+.DS_Store
