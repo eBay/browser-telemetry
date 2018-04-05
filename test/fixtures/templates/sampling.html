@@ -7,10 +7,10 @@
             function logData() {
                 $logger.init({ 'url': '/api/log', 'flushInterval': 2000, 'isInSampling': false, 'sendMetrics': true});
 
-                $logger.registerPlugin('custom', function() {
-                    return {                        
+                $logger.registerPlugin('plugin-name', function(payload) {
+                    payload.custom = {
                         'pageName': 'HomePage'
-                    }
+                    };
                 });
                 $logger.log('Hello, Logging Data!!');
                 console.log('Hello from console.log');
