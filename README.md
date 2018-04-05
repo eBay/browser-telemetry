@@ -76,7 +76,7 @@ Minified JS **`logger.min.js`**
     //Add Logger Middleware
     app.use(loggerMiddleware({
         path: '/api/log',
-        log: function(req, res, callback) {
+        log: function(req, callback) {
             let payload = req.browserPayload; 
             console.log('Metrics:', payload.metrics);   
             
@@ -176,8 +176,8 @@ Minified JS **`logger.min.js`**
         * **path**: Path on which logger should be mounted. This is the end where events from browser are posted.
         * **log**: A callback function which will be invoked on every event from client side.
             * **request**: Holds HTTP request object
-            * **response**: Holds HTTP response object. You can set status to 200/404 based on the logic.
-            * **callback**: A callback to notify task completion.
+            * **callback(error, statusCode)**: A callback to notify task completion. When sent with `error`, sets response status code as `500`. With empty params or null in callback function, sets response status code as `200`.
+            Custom status code can be sent via callback args e.g `callback(err, 503)`
 
         ```javascript
             const loggerMiddleware = require('browser-telemetry');
@@ -185,8 +185,9 @@ Minified JS **`logger.min.js`**
             ...
             app.use(loggerMiddleware({
                 path: 'path/to/mount',
-                log: function(req, res, callback) {
+                log: function(req, callback) {
                     console.log(req.browserPayload);
+                    callback();
                 }
             }));
         ```
@@ -194,14 +195,15 @@ Minified JS **`logger.min.js`**
 * #### Log Hook
     As an app developer, you can intercept browser events by hooking to `log` callbacks. Simply pass your custom function while registering middleware as shown below.
     
-    Browser events are populated in `browserPayload` variable in request object.
+    Browser events are populated in **browserPayload** variable in request object. e.g `req.browserPayload`
 
     ```javascript
         app.use(loggerMiddleware({
             path: 'path/to/mount',
-            log: function(req, res, callback) {
-                //req.browserPayload hold browser events/logs.
+            log: function(req, callback) {
+                //**req.browserPayload** hold browser events/logs.
                 console.log(req.browserPayload);
+                callback();
             }
         }));
     ```
@@ -209,25 +211,6 @@ Minified JS **`logger.min.js`**
 
 Main motivation for creating this module is to reduce file size. Currently, minified client side JS file size is **~2KB**.
 
-### Kraken Style Usage
-
-If you are using [krakenjs](https://github.com/krakenjs/kraken-js), then you can easily configure in `middleware.json` as shown below.
-
-```javascript
-    //middleware route
-    "browser-telemetry": {
-        "enabled": true,
-        "priority": 100,
-        "module": {
-            "name": "browser-telemetry",
-            "arguments": [{
-                "path": "/api/log",
-                "log": "MODULE_NAME_TO_REQUIRE"
-            }]
-        }
-    }
-
-```
 ### Example
 See the working example in `example` folder.
 
