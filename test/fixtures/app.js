@@ -12,10 +12,10 @@ app.use(bodyParser.json({ type: 'text/html' }));
 
 app.use(loggerMiddleware({
     path: '/api/log',
-    log: function(req, res, callback) {
-        res.send(JSON.stringify(req.browserPayload)); 
+    log: function(req, callback) {
+        // res.send(JSON.stringify(req.browserPayload)); 
         process.emit('bowserPayload', JSON.stringify(req.browserPayload));       
-        callback();
+        callback(null, 200);
     }
 }));
 

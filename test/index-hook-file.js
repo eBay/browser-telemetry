@@ -24,12 +24,17 @@ describe(__filename, function() {
         let payload = {"metrics":{"navType":"1","rc":"0","lt":"1115","ct":"370","rt":"1042"},
         "logs":[{"level":"LOG","msg":"Hello, $logger.log"},{"msg":"Hello,console.log"},{"level":"INFO","msg":"Hello,console.info"},{"level":"WARN","msg":"Hello,console.warn"},{"level":"DEBUG","msg":"Hello,console.debug"},{"level":"ERROR","msg":"Some Error Error: Error Object\n    at logData (http://localhost:9099/:17:45)\n    at onload (http://localhost:9099/:19:597)"},{"level":"ERROR","msg":"Uncaught SyntaxError: Unexpected token < in JSON at position 0 http://localhost:9099/ 1 1 SyntaxError: Unexpected token < in JSON at position 0\n    at JSON.parse (<anonymous>)\n    at XMLHttpRequest.t.onload"}],
         "custom":{"pageName":"HomePage"}};
-                       
-        request.post({url: 'http://localhost:9099/api/log', headers: {'user-agent': 'Chrome', 'referer': 'http://localhost:9099/'},form: payload}, function(err, res, body) {
+        
+        process.on('bowserPayload', (bowserPayload)=> {
             payload.url = 'http://localhost:9099/';
             payload.userAgent = 'Chrome';
-            assert.equal(JSON.stringify(payload), res.body, 'Payload should be same');
+            assert.equal(JSON.stringify(payload), bowserPayload, 'Payload should be same');
+            process.removeAllListeners(['bowserPayload']);
             done();
+        });
+
+        request.post({url: 'http://localhost:9099/api/log', headers: {'user-agent': 'Chrome', 'referer': 'http://localhost:9099/'},form: payload}, function(err, res, body) {
+            assert.equal(200, res.statusCode, 'Should send 200 status code');
         });                  
     });
 
