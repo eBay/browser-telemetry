@@ -36,10 +36,10 @@ Minified JS **`logger.min.js`**
             function logData() {
                 $logger.init({ 'url': '/api/log', 'flushInterval': 1000, 'samplingRate': 50, 'sendMetrics': true});
 
-                $logger.registerPlugin('custom', function() {
-                    return {
+                $logger.registerPlugin('custom', function(payload) {
+                    payload.custom = {
                         'Pagename': 'HomePage'                        
-                    }
+                    };
                 });
                 $logger.log('Hello, Logging Data!!');
 
@@ -156,15 +156,15 @@ Minified JS **`logger.min.js`**
     ```
 
 * #### $logger.registerPlugin(pluginName, callback)
-    Some times you need to send your own custom data. You can send this by registering your own callback for data fetch. 
+    * **callback(payload)**
+    Some times you need to send your own custom data. You can attach custom data or transform data by registering your own plugin. 
+    Payload object will be passed, which can be mutated in callback.
 
-    On every flush, ALL registered plugins gets called for data fetch.
+    On every flush, ALL registered plugins gets called for data transformation.
 
     ```javascript
-        $logger.registerPlugin('custom', function() {
-            return {
-                'Pagename': 'HomePage'                        
-            }
+        $logger.registerPlugin('custom', function(payload) {
+            payload.Pagename = 'HomePage';
         });
     ```
 
