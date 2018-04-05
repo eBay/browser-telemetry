@@ -1,4 +1,4 @@
-module.exports = function(req, res, callback) {
+module.exports = function(req, callback) {
     let payload = req.browserPayload; 
     console.log('Metrics:', payload.metrics);   
     
