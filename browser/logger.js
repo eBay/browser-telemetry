@@ -125,7 +125,7 @@ Logger.prototype.flush = function() {
     };
 
     Object.keys(_this.plugins).forEach(function(property) {
-        payload[property] = _this.plugins[property]();
+        _this.plugins[property](payload);
     });
 
     if(navigator && navigator.sendBeacon) {
