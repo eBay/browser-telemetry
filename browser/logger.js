@@ -4,7 +4,8 @@ var _DEFAULTS = {
                     'flushInterval': 1000, 
                     isInSampling: true, 
                     samplingRate: 100,
-                    collectMetrics: true
+                    collectMetrics: true,
+                    logLevels: ['log', 'info', 'warn','debug','error']
                 };
 
 function Logger() {   
@@ -13,7 +14,8 @@ function Logger() {
 
     this.url = _DEFAULTS.url;
     this.flushInterval = _DEFAULTS.flushInterval;
-    this.collectMetrics = _DEFAULTS.collectMetrics;    
+    this.collectMetrics = _DEFAULTS.collectMetrics;
+    this.logLevels = _DEFAULTS.logLevels;    
 }
 
 Logger.prototype.init = function(options) {
@@ -21,6 +23,7 @@ Logger.prototype.init = function(options) {
     options = options || _DEFAULTS;    
     this.url = options.url || this.url;
     this.flushInterval = options.flushInterval || this.flushInterval; //In ms
+    this.logLevels = options.logLevels || this.logLevels;
 
     this.collectMetrics = options.collectMetrics !== undefined ? options.collectMetrics : this.collectMetrics;
 
@@ -31,15 +34,15 @@ Logger.prototype.init = function(options) {
 
     //Setup timer & flush ONLY if this is in Sampling
     if(isInSampling) {
-        var loglevels = ['log', 'info', 'warn','debug','error'];
+        var loglevels = ['log', 'info', 'warn','debug','error'];        
 
-        loglevels.forEach(function(level) {
-            var _fn = console[level];
-            console[level] = function() {
-                var args = Array.prototype.slice.call(arguments);
-                _this[level](args);
-                _fn.apply(console, args);
-            }
+        loglevels.forEach(function(level) {            
+                var _fn = console[level];
+                console[level] = function() {
+                    var args = Array.prototype.slice.call(arguments);
+                    _this[level](args);
+                    _fn.apply(console, args);
+                }
         });
 
         setInterval(function() {
@@ -107,8 +110,10 @@ Logger.prototype.clearBuffer = function(clearFromIndex) {
 }
 
 Logger.prototype.addToQ = function(type, args) {
-    var message = (args.length>0 && [].join.call(args, ' ')) || '';
-    this.buffer.push({level: type, msg: message});
+    if(this.logLevels.indexOf(type) > -1 || this.logLevels.indexOf(type.toLowerCase()) > -1) {
+        var message = (args.length>0 && [].join.call(args, ' ')) || '';
+        this.buffer.push({level: type, msg: message});
+    }
 }
 
 Logger.prototype.flush = function() {
