@@ -1,5 +1,4 @@
-module.exports = function(req, callback) {
-    let payload = req.browserPayload; 
+module.exports = function(req, payload) {
     console.log('Metrics:', payload.metrics);   
     
     //Console from Client Side            
@@ -7,5 +6,4 @@ module.exports = function(req, callback) {
         console.log(`${event.level}: ${JSON.stringify(event.msg)}`);
     });   
     console.log('Custom Plugin Data:', payload.custom);   
-    callback();
 };
