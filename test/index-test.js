@@ -70,6 +70,33 @@ describe(__filename, function() {
             });                    
     });
 
+    it('should load JS on Browser and Log Only ERROR', function(done) {
+                
+        process.on('bowserPayload', (bowserPayload)=> {
+            var pload = {"logs":[{"level":"ERROR","msg":"Hello from console.error"}],"custom":{"pageName":"HomePage"},"userAgent":"MSIE 9"};
+            assert.equal(bowserPayload, JSON.stringify(pload));
+            process.removeAllListeners(['bowserPayload']);
+            done();
+        });
+
+        Browser.localhost('www.test.ebay.com', 9099);
+            var browser = new Browser();
+            browser.userAgent = 'MSIE 9';
+            browser.debug = true;
+            browser.on('xhr', function (event) {
+                console.log('* XHR event: ', event);
+            });
+            browser.on('console', function(level, message) {
+                console.log(level, message);                
+            });
+            browser.on('error',function (err){
+               console.log('* error: ', err);
+            });            
+            browser.visit('/loglevels', function startXhr() {
+                console.log('Main page is loaded');                                  
+            });                    
+    });
+
     it('should NOT fire Telemetry JS on Browser', function(done) {
                 
         process.on('bowserPayload', (bowserPayload)=> {

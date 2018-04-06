@@ -25,6 +25,14 @@ app.get('/samplingoff', (req, res)=> {
     });        
 });
 
+app.get('/loglevels', (req, res)=> {    
+    res.sendFile(path.join(__dirname, 'templates/loglevels.html'), {
+        headers: {
+            'Content-Type': 'text/html'
+        }
+    });        
+});
+
 app.get('/', (req, res)=> {    
     res.sendFile(path.join(__dirname, 'templates/allfeatures.html'), {
         headers: {
