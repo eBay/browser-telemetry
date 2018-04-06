@@ -150,6 +150,7 @@ Minified JS **`logger.min.js`**
         "samplingRate": 10, //10%, Client Side Sampling
         "isInSampling": true, //Flag from Server Side Sampling
         "sendMetrics": true, //Flag to send metrics or not
+        "logLevels": ["info", "log", "debug", "error", "warn"] //List of enabled console methods
     }
     ```
 
