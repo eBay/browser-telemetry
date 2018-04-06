@@ -1,5 +1,4 @@
-module.exports = function(req, callback) {
-    //res.send(JSON.stringify(req.browserPayload)); 
-    process.emit('bowserPayload', JSON.stringify(req.browserPayload));       
+module.exports = function(req, payload) {
+    process.emit('bowserPayload', JSON.stringify(payload));       
     callback();
 };
