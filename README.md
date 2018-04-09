@@ -17,6 +17,9 @@
 
 ## Usage
 
+### Environment
+* Minimal **Node Version:** **v8.0.0**
+
 ### Client Side Usage
 
 ```html
