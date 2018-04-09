@@ -223,3 +223,7 @@ See the working example in `example` folder.
 ### Ackowledgement
 
 This module is created as an inspiration from [beaver-logger](https://github.com/krakenjs/beaver-logger). Main motivation is to reduce client side JS file size and provide minimal functionality for intercepting logs/metrics/uncaught exceptions on browser side.
+
+### Privacy Notice
+
+On running this module/Javascript file on browser, it collects page load metrics, console logs, error logs, unhandled exceptions etc and sends data to backend server for processing.
