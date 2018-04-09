@@ -7,6 +7,9 @@
  *  
  **/
 
+/**
+ * Default configuration
+**/
 var _DEFAULTS = {   
                     'url': '/api/log', 
                     'flushInterval': 1000, 
@@ -16,6 +19,9 @@ var _DEFAULTS = {
                     logLevels: ['log', 'info', 'warn','debug','error']
                 };
 
+/**
+ * Logger Class which exposes API for intercepting log, errors & collects metrics
+**/
 function Logger() {   
     this.buffer = []; 
     this.plugins = {};
@@ -26,6 +32,9 @@ function Logger() {
     this.logLevels = _DEFAULTS.logLevels;    
 }
 
+/**
+ * Init API for intializing the class with paramaters.
+**/
 Logger.prototype.init = function(options) {
     var thisObj = this;
     options = options || _DEFAULTS;    
@@ -61,10 +70,16 @@ Logger.prototype.init = function(options) {
     }
 }
 
+/**
+ * API for registering custom functions.
+**/
 Logger.prototype.registerPlugin = function(property, customFunction) {
     this.plugins[property] = customFunction;
 }
 
+/**
+ * Collects metrics using navigation API 
+**/
 Logger.prototype.metrics = function() {
     if(!(window && window.performance)) {
         return;
@@ -113,10 +128,16 @@ Logger.prototype.error = function() {
     this.addToQ('ERROR', args);
 }
 
+/**
+ * Clears Buffer
+**/
 Logger.prototype.clearBuffer = function(clearFromIndex) {
     this.buffer = this.buffer.slice(clearFromIndex);
 }
 
+/**
+ * Adds message and type to Queue
+**/
 Logger.prototype.addToQ = function(type, args) {
     if(this.logLevels.indexOf(type) > -1 || this.logLevels.indexOf(type.toLowerCase()) > -1) {
         var message = (args.length>0 && [].join.call(args, ' ')) || '';
@@ -124,6 +145,9 @@ Logger.prototype.addToQ = function(type, args) {
     }
 }
 
+/**
+ * Flushes data from buffer
+**/
 Logger.prototype.flush = function() {
     var _this = this;
 
@@ -160,6 +184,9 @@ Logger.prototype.flush = function() {
     }
 }
 
+/**
+ * Client side Sampling API
+**/
 function sample(samplingRate) {
     if(Math.random() * 100 < samplingRate) {
         return true;
