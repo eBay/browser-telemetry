@@ -227,3 +227,9 @@ This module is created as an inspiration from [beaver-logger](https://github.com
 ### Privacy Notice
 
 On running this module/Javascript file on browser, it collects page load metrics, console logs, error logs, unhandled exceptions etc and sends data to backend server for processing.
+
+### License
+
+Copyright 2018 eBay Inc.
+ 
+Use of this source code is governed by an MIT-style license that can be found in the LICENSE file or at https://opensource.org/licenses/MIT.
