@@ -36,7 +36,6 @@ function Logger() {
  * Init API for intializing the class with paramaters.
 **/
 Logger.prototype.init = function(options) {
-    var thisObj = this;
     options = options || _DEFAULTS;    
     this.url = options.url || this.url;
     this.flushInterval = options.flushInterval || this.flushInterval; //In ms
@@ -63,8 +62,8 @@ Logger.prototype.init = function(options) {
         });
 
         setInterval(function() {
-            if(thisObj.buffer.length > 0) {
-                thisObj.flush();
+            if(_this.buffer.length > 0) {
+                _this.flush();
             }                
         }, options.flushInterval);
     }
@@ -140,7 +139,7 @@ Logger.prototype.clearBuffer = function(clearFromIndex) {
 **/
 Logger.prototype.addToQ = function(type, args) {
     if(this.logLevels.indexOf(type) > -1 || this.logLevels.indexOf(type.toLowerCase()) > -1) {
-        var message = (args.length>0 && [].join.call(args, ' ')) || '';
+        var message = (args.length > 0 && [].join.call(args, ' ')) || '';
         this.buffer.push({level: type, msg: message});
     }
 }
