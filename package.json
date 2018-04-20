@@ -9,7 +9,7 @@
     "coverage": "NODE_ENV=test DEPLOY_ENV=test istanbul cover --dir gh-pages/coverage ./node_modules/.bin/_mocha test/*.js --- --timeout 15s"
   },
   "keywords": [
-    "Logger",
+    "logger",
     "browser"
   ],
   "dependencies": {
