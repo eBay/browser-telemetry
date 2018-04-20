@@ -1,6 +1,6 @@
 # Browser-Telemetry
 
-`browser-telemetry` module collects client(browser) side errors,logs,metrics(timing & navigation), uncaught exceptions etc and sends back to server for logging & alerting.
+`browser-telemetry` module collects client(browser) side errors, logs, metrics(timing & navigation), uncaught exceptions etc and sends back to server for logging & alerting.
 
 ## Features
 * Intercept console.log/error/info/warn on browser
@@ -10,7 +10,7 @@
 * Sampling (Browser side & Server Side)
 * Custom Data Provider plugins
 
-## TBD
+## Future Enhancements
 * Rate Limiting
 * Token based API access
 * CORS
