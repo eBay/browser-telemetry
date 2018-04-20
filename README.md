@@ -21,6 +21,7 @@
 * Minimal **Node Version:** **v8.0.0**
 
 ### Client Side Usage
+Add `logger.min.js` in **header section** to load it first, as it hooks console, there by intercepting all JS errors. (see below example)
 
 ```html
     <script src="static/logger.min.js">
