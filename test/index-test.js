@@ -43,12 +43,8 @@ describe(__filename, function() {
             done();
         });
 
-        request.post({url: 'http://localhost:9099/api/log', headers: {'user-agent': 'Chrome', 'referer': 'http://localhost:9099/'},form: payload}, function(err, res, body) {
-            // payload.url = 'http://localhost:9099/';
-            // payload.userAgent = 'Chrome';
-            // assert.equal(JSON.stringify(payload), res.body, 'Payload should be same');
-            assert.equal(200, res.statusCode, 'Should send 200 status code');
-            // done();
+        request.post({url: 'http://localhost:9099/api/log', headers: {'user-agent': 'Chrome', 'referer': 'http://localhost:9099/'},form: payload}, function(err, res, body) {            
+            assert.equal(200, res.statusCode, 'Should send 200 status code');            
         });                  
     });
 
@@ -118,7 +114,6 @@ describe(__filename, function() {
             browser.debug = true;
             browser.on('xhr', function (event) {
                 assert.fail('Should NOT call XHR Events');  
-                // console.log('* XHR event: ', event);
             });
             browser.on('console', function(level, message) {
                 console.log(level, message);                

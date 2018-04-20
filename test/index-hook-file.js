@@ -86,7 +86,6 @@ describe(__filename, function() {
             browser.debug = true;
             browser.on('xhr', function (event) {
                 assert.fail('Should NOT call XHR Events');  
-                // console.log('* XHR event: ', event);
             });
             browser.on('console', function(level, message) {
                 console.log(level, message);                
