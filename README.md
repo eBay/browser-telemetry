@@ -1,6 +1,6 @@
 # Browser-Telemetry
 
-[![codecov](https://codecov.io/gh/eBay/browser-telemetry/branch/master/graph/badge.svg)](https://codecov.io/gh/eBay/browser-telemetry) [![Build Status](https://travis-ci.org/eBay/browser-telemetry.svg?branch=master)](travis-ci.org/eBay/browser-telemetry) [![NPM](https://img.shields.io/npm/v/browser-telemetry.svg)](https://www.npmjs.com/package/browser-telemetry) [![Downloads](https://img.shields.io/npm/dm/browser-telemetry.svg)](https://npm-stat.com/charts.html?package=browser-telemetry) [![Known Vulnerabilities](https://snyk.io/test/github/ebay/browser-telemetry/badge.svg?targetFile=package.json)](https://snyk.io/test/github/ebay/browser-telemetry?targetFile=package.json)
+[![codecov](https://codecov.io/gh/eBay/browser-telemetry/branch/master/graph/badge.svg)](https://codecov.io/gh/eBay/browser-telemetry) [![Build Status](https://travis-ci.org/eBay/browser-telemetry.svg?branch=master)](https://travis-ci.org/eBay/browser-telemetry) [![NPM](https://img.shields.io/npm/v/browser-telemetry.svg)](https://www.npmjs.com/package/browser-telemetry) [![Downloads](https://img.shields.io/npm/dm/browser-telemetry.svg)](https://npm-stat.com/charts.html?package=browser-telemetry) [![Known Vulnerabilities](https://snyk.io/test/github/ebay/browser-telemetry/badge.svg?targetFile=package.json)](https://snyk.io/test/github/ebay/browser-telemetry?targetFile=package.json)
 
 `browser-telemetry` module collects client(browser) side errors, logs, metrics(timing & navigation), uncaught exceptions etc and sends back to server for logging & alerting.
 
