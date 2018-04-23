@@ -1,0 +1,7 @@
+node_modules
+.build
+public/js
+.beans
+.cache
+test/static
+.DS_Store
