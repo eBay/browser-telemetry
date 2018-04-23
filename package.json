@@ -1,6 +1,6 @@
 {
   "name": "browser-telemetry",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Browser side logger for Web Apps",
   "main": "index.js",
   "scripts": {
@@ -13,12 +13,12 @@
     "browser"
   ],
   "dependencies": {
-    "express": "^4.16.2",    
+    "express": "^4.16.2",
     "underscore": "^1.8.3",
     "try-require": "^1.2.1"
   },
   "devDependencies": {
-    "body-parser":"^1.18.2",
+    "body-parser": "^1.18.2",
     "istanbul": "^0",
     "jshint": "^2",
     "mocha": "^3",
