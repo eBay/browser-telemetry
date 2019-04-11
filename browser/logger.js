@@ -16,7 +16,8 @@ var _DEFAULTS = {
     isInSampling: true,
     samplingRate: 100,
     collectMetrics: true,
-    logLevels: ['log', 'info', 'warn','debug','error']
+    logLevels: ['log', 'info', 'warn','debug','error'],
+    maxAttempts: 50
 };
 
 /**
@@ -30,6 +31,8 @@ function Logger() {
     this.flushInterval = _DEFAULTS.flushInterval;
     this.collectMetrics = _DEFAULTS.collectMetrics;
     this.logLevels = _DEFAULTS.logLevels;
+    // limit the number of setInterval calls, set -1 to prevent restriction
+    this.maxAttempts = options.maxAttempts !== undefined ? options.maxAttempts : this.maxAttempts;
 }
 
 /**
@@ -61,7 +64,7 @@ Logger.prototype.init = function(options) {
                 }
         });
 
-        setInterval(function() {
+        _this.interval = setInterval(function() {
             if (_this.buffer.length > 0) {
                 _this.flush();
             }
@@ -153,6 +156,13 @@ Logger.prototype.flush = function() {
     if (_this.buffer.length < 1) {
         return;
     }
+    if (_this.maxAttempts > 0) {
+        _this.maxAttempts = _this.maxAttempts - 1;
+        if (_this.maxAttempts === 0) {
+            clearInterval(_this.interval);
+        }
+    }
+
     var bufSize = _this.buffer.length;
     var payload = {
         'metrics': _this.metrics(),
