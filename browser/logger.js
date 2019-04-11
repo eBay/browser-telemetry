@@ -13,11 +13,11 @@
 var _DEFAULTS = {
     'url': '/api/log',
     'flushInterval': 1000,
-    isInSampling: true,
-    samplingRate: 100,
-    collectMetrics: true,
-    logLevels: ['log', 'info', 'warn','debug','error'],
-    maxAttempts: 50
+    'isInSampling': true,
+    'samplingRate': 100,
+    'collectMetrics': true,
+    'logLevels': ['log', 'info', 'warn','debug','error'],
+    'maxAttempts': 50
 };
 
 /**
