@@ -49,7 +49,7 @@ Logger.prototype.init = function(options) {
     var _this = this;
 
     //Setup timer & flush ONLY if this is in Sampling
-    if(isInSampling) {
+    if (isInSampling) {
         var loglevels = ['log', 'info', 'warn','debug','error'];
 
         loglevels.forEach(function(level) {
@@ -62,7 +62,7 @@ Logger.prototype.init = function(options) {
         });
 
         setInterval(function() {
-            if(_this.buffer.length > 0) {
+            if (_this.buffer.length > 0) {
                 _this.flush();
             }
         }, options.flushInterval);
@@ -80,7 +80,7 @@ Logger.prototype.registerPlugin = function(property, customFunction) {
  * Collects metrics using navigation API
 **/
 Logger.prototype.metrics = function() {
-    if(!(window && window.performance)) {
+    if (!(window && window.performance)) {
         return;
     }
 
@@ -117,7 +117,7 @@ Logger.prototype.error = function() {
     var args = [];
     Array.prototype.slice.call(arguments[0]).forEach(function(elem) {
 
-        if(typeof elem === 'object' && elem.stack) {
+        if (typeof elem === 'object' && elem.stack) {
             args.push(elem.stack);
         } else {
             args.push(elem);
@@ -138,7 +138,7 @@ Logger.prototype.clearBuffer = function(clearFromIndex) {
  * Adds message and type to Queue
 **/
 Logger.prototype.addToQ = function(type, args) {
-    if(this.logLevels.indexOf(type) > -1 || this.logLevels.indexOf(type.toLowerCase()) > -1) {
+    if (this.logLevels.indexOf(type) > -1 || this.logLevels.indexOf(type.toLowerCase()) > -1) {
         var message = (args.length > 0 && [].join.call(args, ' ')) || '';
         this.buffer.push({level: type, msg: message});
     }
@@ -150,7 +150,7 @@ Logger.prototype.addToQ = function(type, args) {
 Logger.prototype.flush = function() {
     var _this = this;
 
-    if(_this.buffer.length < 1) {
+    if (_this.buffer.length < 1) {
         return;
     }
     var bufSize = _this.buffer.length;
@@ -164,9 +164,9 @@ Logger.prototype.flush = function() {
         _this.plugins[property](payload);
     });
 
-    if(navigator && navigator.sendBeacon) {
+    if (navigator && navigator.sendBeacon) {
         var status = navigator.sendBeacon(_this.url, JSON.stringify(payload));
-        if(status) {
+        if (status) {
             _this.clearBuffer(bufSize);
         }
     } else {
@@ -174,7 +174,7 @@ Logger.prototype.flush = function() {
         xhr.open('POST', this.url, true); // third parameter indicates sync xhr
         xhr.setRequestHeader('Content-Type', 'text/plain');
         xhr.onreadystatechange = function() {//Call a function when the state changes.
-            if(xhr.readyState == 4 && xhr.status == 200) {
+            if (xhr.readyState == 4 && xhr.status == 200) {
                 // Request finished. Do processing here.
                 _this.clearBuffer(bufSize);
             }
@@ -187,7 +187,7 @@ Logger.prototype.flush = function() {
  * Client side Sampling API
 **/
 function sample(samplingRate) {
-    if(Math.random() * 100 < samplingRate) {
+    if (Math.random() * 100 < samplingRate) {
         return true;
     } else {
         return false;
@@ -196,7 +196,7 @@ function sample(samplingRate) {
 
 function intialize() {
     var logger = new Logger();
-    if(window) {
+    if (window) {
         window.$logger = logger;
 
         var _onerror = window.onerror;
@@ -204,7 +204,7 @@ function intialize() {
         window.onerror = function() {
             var args = Array.prototype.slice.call(arguments);
             logger.error(args);
-            if(_onerror) {
+            if (_onerror) {
                 return _onerror.apply(window, args);
             } else {
                 return false;
