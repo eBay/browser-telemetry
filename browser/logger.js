@@ -4,39 +4,39 @@
  * Use of this source code is governed by an MIT-style
  * license that can be found in the LICENSE file or at
  * https://opensource.org/licenses/MIT.
- *  
+ *
  **/
 
 /**
  * Default configuration
 **/
-var _DEFAULTS = {   
-                    'url': '/api/log', 
-                    'flushInterval': 1000, 
-                    isInSampling: true, 
-                    samplingRate: 100,
-                    collectMetrics: true,
-                    logLevels: ['log', 'info', 'warn','debug','error']
-                };
+var _DEFAULTS = {
+    'url': '/api/log',
+    'flushInterval': 1000,
+    isInSampling: true,
+    samplingRate: 100,
+    collectMetrics: true,
+    logLevels: ['log', 'info', 'warn','debug','error']
+};
 
 /**
  * Logger Class which exposes API for intercepting log, errors & collects metrics
 **/
-function Logger() {   
-    this.buffer = []; 
+function Logger() {
+    this.buffer = [];
     this.plugins = {};
 
     this.url = _DEFAULTS.url;
     this.flushInterval = _DEFAULTS.flushInterval;
     this.collectMetrics = _DEFAULTS.collectMetrics;
-    this.logLevels = _DEFAULTS.logLevels;    
+    this.logLevels = _DEFAULTS.logLevels;
 }
 
 /**
  * Init API for intializing the class with paramaters.
 **/
 Logger.prototype.init = function(options) {
-    options = options || _DEFAULTS;    
+    options = options || _DEFAULTS;
     this.url = options.url || this.url;
     this.flushInterval = options.flushInterval || this.flushInterval; //In ms
     this.logLevels = options.logLevels || this.logLevels;
@@ -50,9 +50,9 @@ Logger.prototype.init = function(options) {
 
     //Setup timer & flush ONLY if this is in Sampling
     if(isInSampling) {
-        var loglevels = ['log', 'info', 'warn','debug','error'];        
+        var loglevels = ['log', 'info', 'warn','debug','error'];
 
-        loglevels.forEach(function(level) {            
+        loglevels.forEach(function(level) {
                 var _fn = console[level];
                 console[level] = function() {
                     var args = Array.prototype.slice.call(arguments);
@@ -64,7 +64,7 @@ Logger.prototype.init = function(options) {
         setInterval(function() {
             if(_this.buffer.length > 0) {
                 _this.flush();
-            }                
+            }
         }, options.flushInterval);
     }
 }
@@ -77,7 +77,7 @@ Logger.prototype.registerPlugin = function(property, customFunction) {
 }
 
 /**
- * Collects metrics using navigation API 
+ * Collects metrics using navigation API
 **/
 Logger.prototype.metrics = function() {
     if(!(window && window.performance)) {
@@ -116,7 +116,7 @@ Logger.prototype.warn = function() {
 Logger.prototype.error = function() {
     var args = [];
     Array.prototype.slice.call(arguments[0]).forEach(function(elem) {
-        
+
         if(typeof elem === 'object' && elem.stack) {
             args.push(elem.stack);
         } else {
@@ -152,12 +152,12 @@ Logger.prototype.flush = function() {
 
     if(_this.buffer.length < 1) {
         return;
-    } 
+    }
     var bufSize = _this.buffer.length;
     var payload = {
         'metrics': _this.metrics(),
-        'logs': _this.buffer        
-        
+        'logs': _this.buffer
+
     };
 
     Object.keys(_this.plugins).forEach(function(property) {
@@ -168,8 +168,8 @@ Logger.prototype.flush = function() {
         var status = navigator.sendBeacon(_this.url, JSON.stringify(payload));
         if(status) {
             _this.clearBuffer(bufSize);
-        }        
-    } else {        
+        }
+    } else {
         var xhr = new XMLHttpRequest();
         xhr.open('POST', this.url, true); // third parameter indicates sync xhr
         xhr.setRequestHeader('Content-Type', 'text/plain');
@@ -177,7 +177,7 @@ Logger.prototype.flush = function() {
             if(xhr.readyState == 4 && xhr.status == 200) {
                 // Request finished. Do processing here.
                 _this.clearBuffer(bufSize);
-            }            
+            }
         }
         xhr.send(JSON.stringify(payload));
     }
@@ -191,14 +191,14 @@ function sample(samplingRate) {
         return true;
     } else {
         return false;
-    }    
+    }
 }
 
-function intialize() {    
+function intialize() {
     var logger = new Logger();
     if(window) {
         window.$logger = logger;
-        
+
         var _onerror = window.onerror;
         //Handle Uncaught Errors
         window.onerror = function() {
@@ -208,9 +208,9 @@ function intialize() {
                 return _onerror.apply(window, args);
             } else {
                 return false;
-            }            
-        };        
-    }    
+            }
+        };
+    }
 }
 
 intialize();
