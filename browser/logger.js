@@ -47,12 +47,13 @@ Logger.prototype.init = function(options) {
     this.collectMetrics = options.collectMetrics !== undefined ? options.collectMetrics : this.collectMetrics;
 
     //Use Sampling Flag provide in init() or calculate Sampling factor based on Sampling Rate
-    var isInSampling = options.isInSampling !== undefined ? options.isInSampling : sample(options.samplingRate);
-    console.log('Is in Sample: ', isInSampling);
+    this.isInSampling = options.isInSampling !== undefined ? options.isInSampling : sample(options.samplingRate);
+    // Use Critical Flag to overrides Sampling Flag - applicable only for critical errors
+    this.isSendCritical = options.isSendCritical !== undefined ? options.isSendCritical : false;
     var _this = this;
 
     //Setup timer & flush ONLY if this is in Sampling
-    if (isInSampling) {
+    if (_this.isInSampling || _this.isSendCritical) {
         var loglevels = ['log', 'info', 'warn','debug','error'];
 
         loglevels.forEach(function(level) {
@@ -143,7 +144,12 @@ Logger.prototype.clearBuffer = function(clearFromIndex) {
 Logger.prototype.addToQ = function(type, args) {
     if (this.logLevels.indexOf(type) > -1 || this.logLevels.indexOf(type.toLowerCase()) > -1) {
         var message = (args.length > 0 && [].join.call(args, ' ')) || '';
-        this.buffer.push({level: type, msg: message});
+        if (this.isInSampling || (this.isSendCritical && message.indexOf('"type":"critical"') > -1)) {
+            this.buffer.push({
+                level: type,
+                msg: message
+            });
+        }
     }
 }
 
