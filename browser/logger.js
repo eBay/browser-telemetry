@@ -40,11 +40,12 @@ function Logger() {
 Logger.prototype.init = function(options) {
     options = options || _DEFAULTS;
     this.url = options.url || this.url;
-    this.flushInterval = options.flushInterval || this.flushInterval; // In ms
     this.logLevels = options.logLevels || this.logLevels;
 
+    // Use flushInterval flag to determind flush time laps, set 0 to flush on pageHide
+    this.flushInterval = options.flushInterval !== undefined ? options.flushInterval : this.flushInterval;
+    // Use collectMetrics flag to collect perf metrics
     this.collectMetrics = options.collectMetrics !== undefined ? options.collectMetrics : this.collectMetrics;
-
     // Use Sampling Flag provide in init() or calculate Sampling factor based on Sampling Rate
     this.isInSampling = options.isInSampling !== undefined ? options.isInSampling : sample(options.samplingRate);
     // Use Critical Flag to overrides Sampling Flag - applicable only for critical errors
@@ -66,11 +67,16 @@ Logger.prototype.init = function(options) {
                 }
         });
 
-        _this.interval = setInterval(function() {
-            if (_this.buffer.length > 0) {
+        if (_this.flushInterval) {
+            _this.interval = setInterval(function() {
                 _this.flush();
-            }
-        }, options.flushInterval);
+            }, _this.flushInterval);
+        } else {
+            var activeEvent = 'onpagehide' in window ? 'pagehide' : 'beforeunload';
+            window.addEventListener(activeEvent, function() {
+                _this.flush();
+            }, false);
+        }
     }
 };
 
