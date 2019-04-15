@@ -84,20 +84,20 @@ Logger.prototype.registerPlugin = function(property, customFunction) {
  * Collects metrics using navigation API
 **/
 Logger.prototype.metrics = function() {
-    if (!(window && window.performance)) {
+    if (!window.performance) {
         return;
     }
 
-    var perf = window.performance;
-    var perfData = perf.timing;
-    var navData = perf.navigation;
-    var metrics = {
-        'navType': navData.type, // 0=Navigate, 1=Reload, 2=History
-        'rc': navData.redirectCount,
-        'lt': perfData.loadEventEnd - perfData.navigationStart, // PageLoadTime
-        'ct': perfData.responseEnd - perfData.requestStart, // connectTime
-        'rt': perfData.domComplete - perfData.domLoading // renderTime
-    };
+    var perf = window.performance,
+        perfData = perf.timing,
+        navData = perf.navigation,
+        metrics = {
+            'navType': navData.type, // 0=Navigate, 1=Reload, 2=History
+            'rc': navData.redirectCount,
+            'lt': perfData.loadEventEnd - perfData.navigationStart, // PageLoadTime
+            'ct': perfData.responseEnd - perfData.requestStart, // connectTime
+            'rt': perfData.domComplete - perfData.domLoading // renderTime
+        };
     return metrics;
 };
 
