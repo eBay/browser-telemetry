@@ -218,7 +218,7 @@ Logger.prototype.flush = function() {
                 // Request finished. Do processing here.
                 _this.clearBuffer(bufSize);
             }
-        }
+        };
         xhr.send(JSON.stringify(payload));
     }
 };
