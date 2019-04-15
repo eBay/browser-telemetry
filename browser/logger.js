@@ -204,11 +204,7 @@ Logger.prototype.flush = function() {
  * Client side Sampling API
 **/
 function sample(samplingRate) {
-    if (Math.random() * 100 < samplingRate) {
-        return true;
-    } else {
-        return false;
-    }
+    return Math.random() * 100 < samplingRate;
 }
 
 function intialize() {
