@@ -219,9 +219,8 @@ function intialize() {
             logger.error(args);
             if (_onerror) {
                 return _onerror.apply(window, args);
-            } else {
-                return false;
             }
+            return false;
         };
     }
 }
