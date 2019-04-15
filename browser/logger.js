@@ -16,7 +16,7 @@ var _DEFAULTS = {
     'isInSampling': true,
     'samplingRate': 100,
     'collectMetrics': true,
-    'logLevels': ['log', 'info', 'warn','debug','error'],
+    'logLevels': ['log', 'info', 'warn', 'debug', 'error'],
     'maxAttempts': 50
 };
 
@@ -56,15 +56,15 @@ Logger.prototype.init = function(options) {
 
     // Setup timer & flush ONLY when falls into Sampling or Critical enabled
     if (_this.isInSampling || _this.isSendCritical) {
-        var loglevels = ['log', 'info', 'warn','debug','error'];
+        var loglevels = ['log', 'info', 'warn', 'debug', 'error'];
 
         loglevels.forEach(function(level) {
-                var _fn = console[level];
-                console[level] = function() {
-                    var args = Array.prototype.slice.call(arguments);
-                    _this[level](args);
-                    _fn.apply(console, args);
-                }
+            var _fn = console[level];
+            console[level] = function() {
+                var args = Array.prototype.slice.call(arguments);
+                _this[level](args);
+                _fn.apply(console, args);
+            }
         });
 
         if (_this.flushInterval) {
