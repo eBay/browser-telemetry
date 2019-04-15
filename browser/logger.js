@@ -154,10 +154,25 @@ Logger.prototype.addToQ = function(type, args) {
         if (this.isInSampling || (this.isSendCritical && message.indexOf('"type":"critical"') > -1)) {
             this.buffer.push({
                 level: type,
-                msg: message
+                msg: message,
+                desc: this.getDesc(message)
             });
         }
     }
+};
+
+/**
+ * Get error description
+**/
+Logger.prototype.getDesc = function(msg) {
+    var desc = 'Non critical';
+    if (msg.indexOf('{') > -1 && msg.indexOf('}') > -1) {
+        try {
+            var msgObj = JSON.parse(msg.substring(msg.indexOf('{'), msg.indexOf('}') + 1));
+            desc = msgObj && msgObj.desc;
+        } catch (e) {}
+    }
+    return desc;
 };
 
 /**
@@ -181,7 +196,8 @@ Logger.prototype.flush = function() {
             'metrics': _this.metrics(),
             'logs': _this.buffer,
             'isBeaconAPI': false
-        };
+        },
+        url = _this.url + (_this.url.indexOf('?') === -1 ? '?' : '&') + 'desc=' + encodeURI(_this.buffer.map(a => a.desc));
 
     Object.keys(_this.plugins).forEach(function(property) {
         _this.plugins[property](payload);
@@ -189,13 +205,13 @@ Logger.prototype.flush = function() {
 
     if (navigator && navigator.sendBeacon) {
         payload.isBeaconAPI = true;
-        var status = navigator.sendBeacon(_this.url, JSON.stringify(payload));
+        var status = navigator.sendBeacon(url, JSON.stringify(payload));
         if (status) {
             _this.clearBuffer(bufSize);
         }
     } else {
         var xhr = new XMLHttpRequest();
-        xhr.open('POST', this.url, true); // third parameter indicates sync xhr
+        xhr.open('POST', url, true); // third parameter indicates sync xhr
         xhr.setRequestHeader('Content-Type', 'text/plain');
         xhr.onreadystatechange = function() {// Call a function when the state changes.
             if (xhr.readyState === 4 && xhr.status === 200) {
