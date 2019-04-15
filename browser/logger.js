@@ -41,18 +41,18 @@ function Logger() {
 Logger.prototype.init = function(options) {
     options = options || _DEFAULTS;
     this.url = options.url || this.url;
-    this.flushInterval = options.flushInterval || this.flushInterval; //In ms
+    this.flushInterval = options.flushInterval || this.flushInterval; // In ms
     this.logLevels = options.logLevels || this.logLevels;
 
     this.collectMetrics = options.collectMetrics !== undefined ? options.collectMetrics : this.collectMetrics;
 
-    //Use Sampling Flag provide in init() or calculate Sampling factor based on Sampling Rate
+    // Use Sampling Flag provide in init() or calculate Sampling factor based on Sampling Rate
     this.isInSampling = options.isInSampling !== undefined ? options.isInSampling : sample(options.samplingRate);
     // Use Critical Flag to overrides Sampling Flag - applicable only for critical errors
     this.isSendCritical = options.isSendCritical !== undefined ? options.isSendCritical : false;
     var _this = this;
 
-    //Setup timer & flush ONLY if this is in Sampling
+    // Setup timer & flush ONLY when falls into Sampling or Critical enabled
     if (_this.isInSampling || _this.isSendCritical) {
         var loglevels = ['log', 'info', 'warn','debug','error'];
 
@@ -71,14 +71,14 @@ Logger.prototype.init = function(options) {
             }
         }, options.flushInterval);
     }
-}
+};
 
 /**
  * API for registering custom functions.
 **/
 Logger.prototype.registerPlugin = function(property, customFunction) {
     this.plugins[property] = customFunction;
-}
+};
 
 /**
  * Collects metrics using navigation API
@@ -94,28 +94,28 @@ Logger.prototype.metrics = function() {
     var metrics = {
         'navType': navData.type, // 0=Navigate, 1=Reload, 2=History
         'rc': navData.redirectCount,
-        'lt': perfData.loadEventEnd - perfData.navigationStart, //PageLoadTime
-        'ct': perfData.responseEnd - perfData.requestStart, //connectTime
-        'rt': perfData.domComplete - perfData.domLoading //renderTime
+        'lt': perfData.loadEventEnd - perfData.navigationStart, // PageLoadTime
+        'ct': perfData.responseEnd - perfData.requestStart, // connectTime
+        'rt': perfData.domComplete - perfData.domLoading // renderTime
     };
     return metrics;
-}
+};
 
 Logger.prototype.log = function() {
     this.addToQ('LOG', arguments);
-}
+};
 
 Logger.prototype.info = function() {
     this.addToQ('INFO', arguments);
-}
+};
 
 Logger.prototype.debug = function() {
     this.addToQ('DEBUG', arguments);
-}
+};
 
 Logger.prototype.warn = function() {
     this.addToQ('WARN', arguments);
-}
+};
 
 Logger.prototype.error = function() {
     var args = [];
@@ -129,14 +129,14 @@ Logger.prototype.error = function() {
     });
 
     this.addToQ('ERROR', args);
-}
+};
 
 /**
  * Clears Buffer
 **/
 Logger.prototype.clearBuffer = function(clearFromIndex) {
     this.buffer = this.buffer.slice(clearFromIndex);
-}
+};
 
 /**
  * Adds message and type to Queue
@@ -151,7 +151,7 @@ Logger.prototype.addToQ = function(type, args) {
             });
         }
     }
-}
+};
 
 /**
  * Flushes data from buffer
@@ -189,7 +189,7 @@ Logger.prototype.flush = function() {
         var xhr = new XMLHttpRequest();
         xhr.open('POST', this.url, true); // third parameter indicates sync xhr
         xhr.setRequestHeader('Content-Type', 'text/plain');
-        xhr.onreadystatechange = function() {//Call a function when the state changes.
+        xhr.onreadystatechange = function() {// Call a function when the state changes.
             if (xhr.readyState == 4 && xhr.status == 200) {
                 // Request finished. Do processing here.
                 _this.clearBuffer(bufSize);
@@ -197,7 +197,7 @@ Logger.prototype.flush = function() {
         }
         xhr.send(JSON.stringify(payload));
     }
-}
+};
 
 /**
  * Client side Sampling API
@@ -216,7 +216,7 @@ function intialize() {
         window.$logger = logger;
 
         var _onerror = window.onerror;
-        //Handle Uncaught Errors
+        // Handle Uncaught Errors
         window.onerror = function() {
             var args = Array.prototype.slice.call(arguments);
             logger.error(args);
