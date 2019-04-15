@@ -149,7 +149,7 @@ Logger.prototype.clearBuffer = function(clearFromIndex) {
  * Adds message and type to Queue
 **/
 Logger.prototype.addToQ = function(type, args) {
-    if (this.logLevels.indexOf(type) > -1 || this.logLevels.indexOf(type.toLowerCase()) > -1) {
+    if (this.logLevels.indexOf(type.toLowerCase()) > -1) {
         var message = (args.length > 0 && [].join.call(args, ' ')) || '';
         if (this.isInSampling || (this.isSendCritical && message.indexOf('"type":"critical"') > -1)) {
             this.buffer.push({
