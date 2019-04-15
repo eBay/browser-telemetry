@@ -169,18 +169,19 @@ Logger.prototype.flush = function() {
         }
     }
 
-    var bufSize = _this.buffer.length;
-    var payload = {
-        'metrics': _this.metrics(),
-        'logs': _this.buffer
-
-    };
+    var bufSize = _this.buffer.length,
+        payload = {
+            'metrics': _this.metrics(),
+            'logs': _this.buffer,
+            'isBeaconAPI': false
+        };
 
     Object.keys(_this.plugins).forEach(function(property) {
         _this.plugins[property](payload);
     });
 
     if (navigator && navigator.sendBeacon) {
+        payload.isBeaconAPI = true;
         var status = navigator.sendBeacon(_this.url, JSON.stringify(payload));
         if (status) {
             _this.clearBuffer(bufSize);
@@ -190,7 +191,7 @@ Logger.prototype.flush = function() {
         xhr.open('POST', this.url, true); // third parameter indicates sync xhr
         xhr.setRequestHeader('Content-Type', 'text/plain');
         xhr.onreadystatechange = function() {// Call a function when the state changes.
-            if (xhr.readyState == 4 && xhr.status == 200) {
+            if (xhr.readyState === 4 && xhr.status === 200) {
                 // Request finished. Do processing here.
                 _this.clearBuffer(bufSize);
             }
