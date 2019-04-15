@@ -31,8 +31,7 @@ function Logger() {
     this.flushInterval = _DEFAULTS.flushInterval;
     this.collectMetrics = _DEFAULTS.collectMetrics;
     this.logLevels = _DEFAULTS.logLevels;
-    // limit the number of setInterval calls, set -1 to prevent restriction
-    this.maxAttempts = options.maxAttempts !== undefined ? options.maxAttempts : this.maxAttempts;
+    this.maxAttempts = _DEFAULTS.maxAttempts;
 }
 
 /**
@@ -50,6 +49,8 @@ Logger.prototype.init = function(options) {
     this.isInSampling = options.isInSampling !== undefined ? options.isInSampling : sample(options.samplingRate);
     // Use Critical Flag to overrides Sampling Flag - applicable only for critical errors
     this.isSendCritical = options.isSendCritical !== undefined ? options.isSendCritical : false;
+    // limit the number of setInterval calls, set -1 to prevent restriction
+    this.maxAttempts = options.maxAttempts !== undefined ? options.maxAttempts : this.maxAttempts;
     var _this = this;
 
     // Setup timer & flush ONLY when falls into Sampling or Critical enabled
