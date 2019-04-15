@@ -121,7 +121,7 @@ Logger.prototype.error = function() {
     var args = [];
     Array.prototype.slice.call(arguments[0]).forEach(function(elem) {
 
-        if (typeof elem === 'object' && elem.stack) {
+        if (typeof elem === 'object' && elem && elem.stack) {
             args.push(elem.stack);
         } else {
             args.push(elem);
