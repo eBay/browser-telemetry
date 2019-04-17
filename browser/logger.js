@@ -8,6 +8,10 @@
  **/
 
 /**
+  * v1.1.1
+ **/
+
+/**
  * Default configuration
 **/
 var _DEFAULTS = {
@@ -64,7 +68,7 @@ Logger.prototype.init = function(options) {
                 var args = Array.prototype.slice.call(arguments);
                 _this[level](args);
                 _fn.apply(console, args);
-            }
+            };
         });
 
         if (_this.flushInterval) {
@@ -72,8 +76,7 @@ Logger.prototype.init = function(options) {
                 _this.flush();
             }, _this.flushInterval);
         } else {
-            var activeEvent = 'onpagehide' in window ? 'pagehide' : 'beforeunload';
-            window.addEventListener(activeEvent, function() {
+            window.addEventListener('onpagehide' in window ? 'pagehide' : 'beforeunload', function() {
                 _this.flush();
             }, false);
         }
@@ -197,7 +200,7 @@ Logger.prototype.flush = function() {
             'logs': _this.buffer,
             'isBeaconAPI': false
         },
-        url = _this.url + (_this.url.indexOf('?') === -1 ? '?' : '&') + 'desc=' + encodeURI(_this.buffer.map(a => a.desc));
+        url = _this.url + (_this.url.indexOf('?') === -1 ? '?' : '&') + 'desc=' + encodeURI(_this.buffer.map(function(a) {return a.desc;}));
 
     Object.keys(_this.plugins).forEach(function(property) {
         _this.plugins[property](payload);
