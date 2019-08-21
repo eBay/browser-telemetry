@@ -2,7 +2,7 @@
 
 [![codecov](https://codecov.io/gh/eBay/browser-telemetry/branch/master/graph/badge.svg)](https://codecov.io/gh/eBay/browser-telemetry) [![Build Status](https://travis-ci.org/eBay/browser-telemetry.svg?branch=master)](https://travis-ci.org/eBay/browser-telemetry) [![NPM](https://img.shields.io/npm/v/browser-telemetry.svg)](https://www.npmjs.com/package/browser-telemetry) [![Downloads](https://img.shields.io/npm/dm/browser-telemetry.svg)](https://npm-stat.com/charts.html?package=browser-telemetry) [![Known Vulnerabilities](https://snyk.io/test/github/ebay/browser-telemetry/badge.svg?targetFile=package.json)](https://snyk.io/test/github/ebay/browser-telemetry?targetFile=package.json)
 
-`browser-telemetry` module collects client(browser) side errors, logs, metrics(timing & navigation), uncaught exceptions etc and sends back to server for logging & alerting.
+`browser-telemetry` module collects client (browser) side errors, logs, metrics (timing & navigation), uncaught exceptions etc. and sends back to server for logging & alerting.
 
 ## Features
 * Intercept console.log/error/info/warn on browser
@@ -11,6 +11,7 @@
 * Timing & Navigation metrics
 * Sampling (Browser side & Server Side)
 * Custom Data Provider plugins
+* Capture `Critical` errors irrespective of sampling
 
 ## Future Enhancements
 * Rate Limiting
@@ -26,8 +27,7 @@
 Add `logger.min.js` in **header section** to load it first, as it hooks console, there by intercepting all JS errors. (see below example)
 
 ```html
-    <script src="static/logger.min.js">
-    </script>
+    <script src="static/logger.min.js"></script>
 ```
 Minified JS **`logger.min.js`**
 
@@ -35,16 +35,25 @@ Minified JS **`logger.min.js`**
 ```html
 <html>
     <head>
-        <script src="static/logger.min.js">
-        </script>
-
         <script>
             function logData() {
-                $logger.init({ 'url': '/api/log', 'flushInterval': 1000, 'samplingRate': 50, 'sendMetrics': true});
+                $logger.init(
+                  {
+                    'url': '/api/log',
+                    'flushInterval': 1000,
+                    'samplingRate': 50,
+                    'sendMetrics': true,
+                    'isInSampling': true,
+                    'isSendCritical': true,
+                    'logLevels': ['log', 'info', 'warn', 'debug', 'error'],
+                    'maxAttempts': 10
+                  }
+                );
 
                 $logger.registerPlugin('custom', function(payload) {
                     payload.custom = {
-                        'Pagename': 'HomePage'                        
+                        'PageName': 'HomePage',
+                        'BuildVersion': 'v1.3.4'                  
                     };
                 });
                 $logger.log('Hello, Logging Data!!');
@@ -53,13 +62,19 @@ Minified JS **`logger.min.js`**
                 console.log('Hello, from console.log');
                 console.error('Hello, from console.error');
                 console.info('Hello, from console.info');
+                console.error({
+                  'type': 'critical',
+                  'desc': 'Add to cart failed with the following error: Session has expired',
+                  'endpoint': 'http://www.ebay.com/ajax'
+                });
 
                 //Client Side Uncaught Exception
                 throw new Error('Uncaught Error');
             }
         </script>
+        <script src="static/logger.min.js" onload="logData()"></script>
     </head>
-    <body onload="logData()">
+    <body>
             <h1>Hello World!!</h1>
     </body>
 
@@ -69,7 +84,7 @@ Minified JS **`logger.min.js`**
 ### Server Side Usage
 
 ```javascript
-    
+
     let app = express();
     const path = path.resolve('browser-telemetry');
     app.use('/static', express.static(path.join(path, '../browser')));
@@ -78,13 +93,13 @@ Minified JS **`logger.min.js`**
 
     //require Logger
     let loggerMiddleware = require('./');
-    
+
     //Add Logger Middleware
     app.use(loggerMiddleware({
         path: '/api/log',
         log: function(req, payload) {
             console.log('Metrics:', payload.metrics);   
-            
+
             //Consoles from Client Side            
             payload.logs.forEach((event) => {
                 console.log(`${event.level}: ${JSON.stringify(event.msg)}`);
@@ -96,7 +111,7 @@ Minified JS **`logger.min.js`**
 ### Payload Data
 * **logs/errors:** ALL console logs/errors are intercepted and sent in `logs` field.
 * **Uncaught Exceptions:** ALL uncaught exceptions are intercepted and sent in `logs` field as `ERROR`.
-* **Metrics:** Browser load times are captured using timing & navigation API(Only in compatible browsers). 
+* **Metrics:** Browser load times are captured using timing & navigation API(Only in compatible browsers).
     * **rc:** Redirect Count, number of times page is redirected before hitting current page.
     * **lt:** Load Time, load time of the page.
     * **ct:** Connect Time, time took to connect to server.
@@ -132,6 +147,14 @@ Minified JS **`logger.min.js`**
     {
       "level": "ERROR",
       "msg": "Uncaught Error: Uncaught http://localhost:8080/ 20 23 Error: Uncaught\n    at logData (http://localhost:8080/:20:23)\n    at onload (http://localhost:8080/:24:30)"
+    },
+    {
+      "level": "ERROR",
+      "msg": {
+        "type": "critical",
+        "desc": "Add to cart failed with the following error: Session has expired",
+        "endpoint": "http://www.ebay.com/ajax"
+      }
     }
   ],
   "custom": {
@@ -147,29 +170,32 @@ Minified JS **`logger.min.js`**
     On load of Javascript file, `$logger` object gets hooked up to `window` object for global access.
 
 * #### $logger.init(object)
-    For initializing logger, call this API. 
+    For initializing logger, call this API.
     **Input:**
     ```javascript
     {
         "url": "api/log", //Relative path
-        "flushInterval": 1000, //1sec,
+        "flushInterval": 1000, //1sec, an alternative - set 0 to fire when user navigates away (/once)
         "samplingRate": 10, //10%, Client Side Sampling
         "isInSampling": true, //Flag from Server Side Sampling
         "sendMetrics": true, //Flag to send metrics or not
-        "logLevels": ["info", "log", "debug", "error", "warn"] //List of enabled console methods
+        "logLevels": ["info", "log", "debug", "error", "warn"], //List of enabled console methods
+        "isSendCritical": true, //Enables critical flow irrespective or sampling
+        "maxAttempts": 10 //When flushInterval is not 0, limit the number of times beacon will be sent
     }
     ```
 
 * #### $logger.registerPlugin(pluginName, callback)
     * **callback(payload)**
-    Some times you need to send your own custom data. You can attach custom data or transform data by registering your own plugin. 
+    Some times you need to send your own custom data. You can attach custom data or transform data by registering your own plugin.
     Payload object will be passed, which can be mutated in callback.
 
     On every flush, ALL registered plugins gets called for data transformation.
 
     ```javascript
         $logger.registerPlugin('custom', function(payload) {
-            payload.Pagename = 'HomePage';
+            payload.PageName = 'HomePage';
+            payload.BuildVersion = 'v1.3.4';
         });
     ```
 
@@ -177,7 +203,7 @@ Minified JS **`logger.min.js`**
 
 * #### Middleware
     #### require('browser-telemetry')(options)
-    * **options:** 
+    * **options:**
         * **path**: Path on which logger should be mounted. This is the end where events from browser are posted.
         * **log**: A callback function which will be invoked on every event from client side.
             * **request**: Holds HTTP request object
@@ -197,7 +223,7 @@ Minified JS **`logger.min.js`**
 
 * #### Log Hook
     As an app developer, you can intercept browser events by hooking to `log` callbacks. Simply pass your custom function while registering middleware as shown below.
-    
+
     Browser events are populated in **payload** param.
 
     ```javascript
@@ -234,5 +260,5 @@ On running this module/Javascript file on browser, it collects page load metrics
 ### License
 
 Copyright 2018 eBay Inc.
- 
+
 Use of this source code is governed by an MIT-style license that can be found in the LICENSE file or at https://opensource.org/licenses/MIT.
