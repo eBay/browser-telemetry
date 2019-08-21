@@ -8,7 +8,7 @@
  **/
 
 /**
-  * v1.1.1
+  * v1.1.7
  **/
 
 /**
@@ -94,21 +94,19 @@ Logger.prototype.registerPlugin = function(property, customFunction) {
  * Collects metrics using navigation API
 **/
 Logger.prototype.metrics = function() {
-    if (!window.performance) {
-        return;
+    if (window.performance) {
+        var perf = window.performance,
+            perfData = perf.timing,
+            navData = perf.navigation;
+            perf.metrics = {
+                'navType': navData.type, // 0=Navigate, 1=Reload, 2=History
+                'rc': navData.redirectCount,
+                'lt': perfData.loadEventEnd - perfData.navigationStart, // PageLoadTime
+                'ct': perfData.responseEnd - perfData.requestStart, // connectTime
+                'rt': perfData.domComplete - perfData.domLoading // renderTime
+            };
+        return perf.metrics;
     }
-
-    var perf = window.performance,
-        perfData = perf.timing,
-        navData = perf.navigation,
-        metrics = {
-            'navType': navData.type, // 0=Navigate, 1=Reload, 2=History
-            'rc': navData.redirectCount,
-            'lt': perfData.loadEventEnd - perfData.navigationStart, // PageLoadTime
-            'ct': perfData.responseEnd - perfData.requestStart, // connectTime
-            'rt': perfData.domComplete - perfData.domLoading // renderTime
-        };
-    return metrics;
 };
 
 Logger.prototype.log = function() {
@@ -153,29 +151,33 @@ Logger.prototype.clearBuffer = function(clearFromIndex) {
 **/
 Logger.prototype.addToQ = function(type, args) {
     if (this.logLevels.indexOf(type.toLowerCase()) > -1) {
-        var message = (args.length > 0 && [].join.call(args, ' ')) || '';
-        if (this.isInSampling || (this.isSendCritical && message.indexOf('"type":"critical"') > -1)) {
+        var desc = 'Non critical',
+            obj = typeof args[0] === 'object' ? args[0] : this.getObj(args[0]);
+        if (obj && obj.type === 'critical') {
+            desc = obj.desc;
+            delete obj.desc;
+            args = JSON.stringify(obj);
+            type = 'CRITICAL';
+        } else {
+            args = (args.length > 0 && [].join.call(args, ' ')) || '';
+        }
+        if (this.isInSampling || (this.isSendCritical && type === 'CRITICAL')) {
             this.buffer.push({
                 level: type,
-                msg: message,
-                desc: this.getDesc(message)
+                msg: args,
+                desc: desc
             });
         }
     }
 };
 
 /**
- * Get error description
+ * Get error Object
 **/
-Logger.prototype.getDesc = function(msg) {
-    var desc = 'Non critical';
-    if (msg.indexOf('{') > -1 && msg.indexOf('}') > -1) {
-        try {
-            var msgObj = JSON.parse(msg.substring(msg.indexOf('{'), msg.indexOf('}') + 1));
-            desc = msgObj && msgObj.desc;
-        } catch (e) {}
-    }
-    return desc;
+Logger.prototype.getObj = function(obj) {
+    try {
+        return JSON.parse(obj);
+    } catch (e) {}
 };
 
 /**
@@ -196,11 +198,14 @@ Logger.prototype.flush = function() {
 
     var bufSize = _this.buffer.length,
         payload = {
-            'metrics': _this.metrics(),
             'logs': _this.buffer,
             'isBeaconAPI': false
         },
         url = _this.url + (_this.url.indexOf('?') === -1 ? '?' : '&') + 'desc=' + encodeURI(_this.buffer.map(function(a) {return a.desc;}));
+
+    if (_this.collectMetrics) {
+        payload.metrics = _this.metrics();
+    }
 
     Object.keys(_this.plugins).forEach(function(property) {
         _this.plugins[property](payload);
