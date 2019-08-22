@@ -8,10 +8,6 @@
  **/
 
 /**
-  * v1.1.7
- **/
-
-/**
  * Default configuration
 **/
 var _DEFAULTS = {
