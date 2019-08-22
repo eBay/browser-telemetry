@@ -16,7 +16,7 @@
 **/
 var _DEFAULTS = {
     'url': '/api/log',
-    'flushInterval': 1000,
+    'flushInterval': 0,
     'isInSampling': true,
     'samplingRate': 100,
     'collectMetrics': true,

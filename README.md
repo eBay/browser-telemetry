@@ -40,7 +40,7 @@ Minified JS **`logger.min.js`**
                 $logger.init(
                   {
                     'url': '/api/log',
-                    'flushInterval': 1000,
+                    'flushInterval': 0,
                     'samplingRate': 50,
                     'sendMetrics': true,
                     'isInSampling': true,
