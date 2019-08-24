@@ -4,7 +4,7 @@
  * Use of this source code is governed by an MIT-style
  * license that can be found in the LICENSE file or at
  * https://opensource.org/licenses/MIT.
- *  
+ *
  **/
 
 const express = require('express');
@@ -22,32 +22,32 @@ app.use(bodyParser.json({ type: 'text/html' }));
 app.use(loggerMiddleware({
     path: '/api/log',
     log: function(req, payload) {
-        process.emit('bowserPayload', JSON.stringify(payload));       
+        process.emit('bowserPayload', JSON.stringify(payload));
     }
 }));
 
-app.get('/samplingoff', (req, res)=> {    
+app.get('/samplingoff', (req, res)=> {
     res.sendFile(path.join(__dirname, 'templates/sampling.html'), {
         headers: {
             'Content-Type': 'text/html'
         }
-    });        
+    });
 });
 
-app.get('/loglevels', (req, res)=> {    
+app.get('/loglevels', (req, res)=> {
     res.sendFile(path.join(__dirname, 'templates/loglevels.html'), {
         headers: {
             'Content-Type': 'text/html'
         }
-    });        
+    });
 });
 
-app.get('/', (req, res)=> {    
+app.get('/', (req, res)=> {
     res.sendFile(path.join(__dirname, 'templates/allfeatures.html'), {
         headers: {
             'Content-Type': 'text/html'
         }
-    });    
+    });
 });
 
 module.exports = app;
