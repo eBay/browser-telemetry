@@ -1,6 +1,6 @@
 {
   "name": "browser-telemetry",
-  "version": "1.0.1",
+  "version": "1.1.7",
   "description": "Browser side logger for Web Apps",
   "main": "index.js",
   "scripts": {

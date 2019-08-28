@@ -1,11 +1,13 @@
 <html>
     <head>
-        <script src="static/logger.js">
-        </script>
-
         <script>
             function logData() {
-                $logger.init({ 'url': '/api/log', 'flushInterval': 2000, 'isInSampling': true, 'sendMetrics': true});
+                $logger.init({
+                    'url': '/api/log',
+                    'flushInterval': 100,
+                    'isInSampling': true,
+                    'sendMetrics': true
+                });
 
                 $logger.registerPlugin('plugin-name', function(payload) {
                     payload.custom = {
@@ -15,12 +17,12 @@
                 $logger.log('Hello, Logging Data!!');
                 console.log('Hello from console.log');
                 console.error('Hello from console.error');
-                console.info('Hello from console.info');                
+                console.info('Hello from console.info');
             }
         </script>
+        <script src="static/logger.js" onload="logData()"></script>
     </head>
-    <body onload="logData()">
-            <h1>Hello World!!</h1>
+    <body>
+        <h1>Hello World!!</h1>
     </body>
-
 </html>
